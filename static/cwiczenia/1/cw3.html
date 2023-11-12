@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../libs/three.js"></script>
+    <style>
+        *
+        {
+            margin: 0;
+        }
+        #root
+        {
+            overflow: hidden;
+        }
+        #es
+        {
+            overflow: scroll;
+            text-align: justify;
+            width: 335px;
+            position: absolute;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form">
+        <button id="add">add</button>
+        <button id="del">del</button>
+    </div>
+    <div id="es"></div>
+    <div id="root">
+    </div>
+    <script>
+        window.addEventListener("load", function () {
+        
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(
+            45,    // kąt patrzenia kamery (FOV - field of view)
+            4/3,    // proporcje widoku, powinny odpowiadać proporcjom ekranu przeglądarki użytkownika
+            0.1,    // minimalna renderowana odległość
+            10000    // maksymalna renderowana odległość od kamery
+            );
+        const axes = new THREE.AxesHelper(1000)
+        scene.add(axes)
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor(0xffffff);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById("root").appendChild( renderer.domElement );
+
+        camera.position.x = -200;
+        camera.position.y = 200;
+        camera.position.z = 200;
+
+        // lub
+
+        camera.position.set(100,100,100)
+
+        // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
+            camera.lookAt(scene.position);
+            const geometry = new THREE.BoxGeometry(50, 50, 50);
+            const material = new THREE.MeshBasicMaterial({
+                    color: 0x8888ff,
+                    side: THREE.DoubleSide,
+                    wireframe: false,
+                    transparent: true,
+                    opacity: 1
+               });
+            
+        // kluczowy element - animacja
+        let add = document.getElementById('add')
+        let del = document.getElementById('del')
+        let tresc = document.getElementById('es')
+        let tab = [];
+        add.addEventListener("click", () => {
+            let cube = new THREE.Mesh(geometry, material);
+            cube.userData.info = "cube";
+            cube.position.set(Math.floor(Math.random()*100),Math.floor(Math.random()*100),Math.floor(Math.random()*100))
+            scene.add(cube)
+            tab.push({
+                info: cube.userData.info,
+                position: cube.position
+            })
+            tresc.innerHTML += `<pre>${JSON.stringify(tab, null, 5)}</pre>`;
+        })
+        del.addEventListener("click", () => {
+            scene.children.pop();
+        })
+        camera.fov = 120;
+        camera.updateProjectionMatrix();
+        function render() {
+            requestAnimationFrame(render);
+            console.log("render leci")
+            
+            //ciągłe renderowanie / wyświetlanie widoku sceny naszą kamerą
+                
+            renderer.render(scene, camera);
+        }
+
+        // na koniec jednokrotne wykonanie powyższej funkcji
+
+        render();
+                })
+    </script>
+</body>
+
+</html>
