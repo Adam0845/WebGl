@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://threejs.org/build/three.js"></script>
+    <style>
+        *
+        {
+            margin: 0;
+        }
+        #root
+        {
+            overflow: hidden;
+        }
+        #es
+        {
+            margin-top: 20px;
+            color: red;
+            text-align: justify;
+            width: 335px;
+            position: absolute;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form">
+        <button id="ss">START/STOP</button>
+    </div>
+    <div id="es"></div>
+    <div id="root"></div>
+    <script>
+ window.addEventListener("load", function () {
+        
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(
+            45,    // kąt patrzenia kamery (FOV - field of view)
+            16/9,    // proporcje widoku, powinny odpowiadać proporcjom ekranu przeglądarki użytkownika
+            0.1,    // minimalna renderowana odległość
+            10000    // maksymalna renderowana odległość od kamery
+            );
+        const axes = new THREE.AxesHelper(1000)
+         scene.add(axes)
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor(0xffffff);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById("root").appendChild( renderer.domElement );
+        camera.position.set(100,100,100)
+        THREE.NoColorSpace
+        THREE.SRGBColorSpace
+        THREE.LinearSRGBColorSpace
+        // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
+            camera.lookAt(scene.position);
+            let moving = false; 
+            const but = document.getElementById('ss')
+            but.addEventListener("click", () => {
+                moving = !moving
+            })
+            let i = 0
+            let tresc = document.getElementById('es');
+            let materials = [];
+            const geometry = new THREE.BoxGeometry(50, 50, 50);
+            let textureS = new THREE.TextureLoader().load('../mats/grass_side.png')
+            textureS.colorSpace = THREE.SRGBColorSpace;
+            let textureT = new THREE.TextureLoader().load('../mats/grass_top.png')
+            textureT.colorSpace = THREE.SRGBColorSpace;
+            let textureB = new THREE.TextureLoader().load('../mats/dirt.png')
+            textureB.colorSpace = THREE.SRGBColorSpace;
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureS }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureS }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureT }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureB }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureS }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureS }));
+            const cube = new THREE.Mesh(geometry, materials);
+        scene.add(cube);
+        camera.fov = 100;
+        camera.updateProjectionMatrix();
+        let angle = 0;
+        
+        function render() {
+            tresc.innerHTML = JSON.stringify({
+                camPosX: parseInt(camera.position.x),
+                camPosY: parseInt(camera.position.y),
+                camPosZ: parseInt(camera.position.z)
+            })
+            if (moving) {
+
+            if (i == 0) {
+                if (camera.position.x < 10) {
+                    i++
+                }
+                angle+=0.01
+                camera.position.z = Math.cos(angle) * 100;
+                camera.position.y = Math.sin(angle) * 100;
+                camera.lookAt(scene.position)
+            }
+
+}
+            requestAnimationFrame(render);
+            console.log("render leci")
+            renderer.render(scene, camera);
+        }
+
+        // na koniec jednokrotne wykonanie powyższej funkcji
+
+        render();
+                })
+    </script>
+</body>
+
+</html>

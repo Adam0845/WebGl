@@ -56,8 +56,12 @@
         THREE.LinearSRGBColorSpace
         // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
             camera.lookAt(scene.position);
-        let wlacznik = false;
-        let pp = document.getElementById('ss')
+            let moving = false; 
+            const but = document.getElementById('ss')
+            but.addEventListener("click", () => {
+                moving = !moving
+            })
+            let i = 0
  
         // kluczowy element - animacja
             const geometry = new THREE.BoxGeometry(20, 20, 20);
@@ -74,13 +78,22 @@
         camera.fov = 100;
         camera.updateProjectionMatrix();
         function render() {
-            pp.addEventListener("click", () => {
-            if(wlacznik == false)
-            {
-                camera.position.x++;
-                camera.lookAt(scene.position);
+            if (moving) {
+
+            if (i == 0) {
+                if (camera.position.x < 10) {
+                    i++
+                }
+               
+                camera.position.x--
+                camera.position.z--
             }
-               });
+            if (i != 0) {
+                camera.position.x++
+                camera.position.z++
+            }
+
+}
             requestAnimationFrame(render);
             console.log("render leci")
             renderer.render(scene, camera);

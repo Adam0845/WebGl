@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://threejs.org/build/three.js"></script>
+    <style>
+        *
+        {
+            margin: 0;
+        }
+        #root
+        {
+            overflow: hidden;
+        }
+        #es
+        {
+            margin-top: 20px;
+            color: red;
+            text-align: justify;
+            width: 335px;
+            position: absolute;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form">
+        <button id="ss">START/STOP</button>
+    </div>
+    <div id="es"></div>
+    <div id="root"></div>
+    <script>
+ window.addEventListener("load", function () {
+        
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(
+            45,    // kąt patrzenia kamery (FOV - field of view)
+            16/9,    // proporcje widoku, powinny odpowiadać proporcjom ekranu przeglądarki użytkownika
+            0.1,    // minimalna renderowana odległość
+            10000    // maksymalna renderowana odległość od kamery
+            );
+        const axes = new THREE.AxesHelper(1000)
+         scene.add(axes)
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor(0xffffff);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById("root").appendChild( renderer.domElement );
+        camera.position.set(250,250,250)
+        THREE.NoColorSpace
+        THREE.SRGBColorSpace
+        THREE.LinearSRGBColorSpace
+        const raycaster = new THREE.Raycaster(); // obiekt Raycastera symulujący "rzucanie" promieni
+        const mouseVector = new THREE.Vector2();
+        raycaster.setFromCamera(mouseVector, camera);
+            camera.lookAt(scene.position);
+            const intersects = raycaster.intersectObjects(scene.children);  
+            console.log(intersects.length)
+            let moving = false; 
+            const but = document.getElementById('ss')
+            but.addEventListener("click", () => {
+                moving = !moving
+            })
+            let i = 0
+            let tresc = document.getElementById('es');
+            let materials = [];
+            const geometry = new THREE.BoxGeometry(256, 256, 256);
+            let textureS = new THREE.TextureLoader().load('../mats/grass_side.png')
+            textureS.colorSpace = THREE.SRGBColorSpace;
+            let textureT = new THREE.TextureLoader().load('../mats/grass_top.png')
+            textureT.colorSpace = THREE.SRGBColorSpace;
+            let textureB = new THREE.TextureLoader().load('../mats/dirt.png')
+            textureB.colorSpace = THREE.SRGBColorSpace;
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureS }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureS }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureT }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureB }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureS }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: textureS }));
+        camera.fov = 140;
+        camera.updateProjectionMatrix();
+
+
+for (let i = 0; i < 3; i++) {
+    const cube = new THREE.Mesh(geometry, materials);
+    cube.position.y = 300 - i * 270
+    scene.add(cube);
+
+
+}
+let aaaa = 0
+
+
+
+let val
+
+let angle = 0
+
+// kluczowy element - animacja
+
+function render() {
+
+    window.addEventListener("mousedown", (e) => {
+        //   console.log(e);
+        mouseVector.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouseVector, camera);
+
+        let intersects = raycaster.intersectObjects(scene.children);
+        val = intersects[0].object
+        console.log(intersects.length)
+        if (intersects.length > 0) {
+            console.log("a")
+            // zerowy w tablicy czyli najbliższy kamery obiekt to ten, którego potrzebujemy:
+            //rotate(intersects[0].object)
+
+            //console.log(intersects[0].object.position.y = 1000);
+            aaaa++
+
+        }
+
+    });
+    if (aaaa > 0) {
+        val.rotation.y += 0.01;
+    }
+    camera.position.y = 100
+
+
+    camera.lookAt(0, 0, 0);
+
+    //camera.updateMatrix();
+
+
+
+
+
+
+
+    requestAnimationFrame(render);
+
+
+    renderer.render(scene, camera);
+}
+
+// na koniec jednokrotne wykonanie powyższej funkcji
+render()
+
+                })
+    </script>
+</body>
+
+</html>
