@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://threejs.org/build/three.js"></script>
+    <style>
+        *
+        {
+            margin: 0;
+        }
+        #root
+        {
+            overflow: hidden;
+        }
+        #es
+        {
+            margin-top: 20px;
+            color: red;
+            text-align: justify;
+            width: 335px;
+            position: absolute;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form">
+        <input type="range" id="skala" min="0.1" max="2" step="0.1" value="1">
+    </div>
+    <div id="es"></div>
+    <div id="root"></div>
+    <script>
+        window.addEventListener("load", function () {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, 16/9, 0.1, 10000);
+            const axes = new THREE.AxesHelper(1000);
+            scene.add(axes);
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setClearColor(0xffffff);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById("root").appendChild(renderer.domElement);
+            camera.position.set(100, 100, 100);
+            camera.lookAt(scene.position);
+
+            const geometry = new THREE.BoxGeometry(20, 20, 20);
+            const material = new THREE.MeshNormalMaterial({
+                color: 0x8888ff,
+                side: THREE.DoubleSide,
+                wireframe: false,
+                transparent: false,
+                opacity: 0.5
+            });
+
+            const cubes = [];
+
+            for (let i = -2; i < 3; ++i) {
+                for (let j = -2; j < 3; ++j) {
+                    for (let h = -2; h < 3; ++h) {
+                        let cube = new THREE.Mesh(geometry, material);
+                        cube.position.set(21 * i, 21 * h, 21 * j);
+                        scene.add(cube);
+                        cubes.push(cube);
+                    }
+                }
+            }
+
+            camera.fov = 100;
+            camera.updateProjectionMatrix();
+
+            const scaleSlider = document.getElementById('skala');
+
+            function updateScale() {
+                const scaleValue = parseFloat(scaleSlider.value);
+
+                cubes.forEach(cube => {
+                    cube.scale.set(scaleValue, scaleValue, scaleValue);
+                });
+            }
+
+            scaleSlider.addEventListener('input', updateScale);
+
+            function render() {
+                requestAnimationFrame(render);
+                console.log("render leci")
+                renderer.render(scene, camera);
+            }
+
+            updateScale(); 
+            render();
+        });
+    </script>
+</body>
+
+</html>

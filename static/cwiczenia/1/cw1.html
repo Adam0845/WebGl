@@ -23,6 +23,9 @@
     <div class="form">
     <input max="100" min="1" type="range" id="fov">
     </div>
+    <div id="tresc">
+
+    </div>
     <div id="root">
     </div>
     <script>
@@ -32,7 +35,7 @@
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(
             45,    // kąt patrzenia kamery (FOV - field of view)
-            4/3,    // proporcje widoku, powinny odpowiadać proporcjom ekranu przeglądarki użytkownika
+            16/9,    // proporcje widoku, powinny odpowiadać proporcjom ekranu przeglądarki użytkownika
             0.1,    // minimalna renderowana odległość
             10000    // maksymalna renderowana odległość od kamery
             );
@@ -64,7 +67,7 @@
         camera.position.set(100,100,100)
 
         // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
-
+            let tresc = document.getElementById('tresc');
             camera.lookAt(scene.position);
             const geometry = new THREE.BoxGeometry(100, 100, 100);
             const material = new THREE.MeshBasicMaterial({
@@ -79,6 +82,9 @@
         // kluczowy element - animacja
         let fov = document.getElementById('fov');
         function render() {
+            tresc.innerHTML = JSON.stringify({
+               fov: camera.fov 
+            })
             cube.rotation.y += 0.01;
             camera.fov = fov.value;
             camera.updateProjectionMatrix();

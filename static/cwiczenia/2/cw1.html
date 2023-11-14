@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="../../libs/three.js"></script>
+    <script src="https://threejs.org/build/three.js"></script>
     <style>
         *
         {
@@ -25,82 +25,63 @@
             position: absolute;
             height: 300px;
         }
+        h1
+        {
+            text-align: center;
+            margin-top: 25%;
+            font-size: 100px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
     </style>
 </head>
 
 <body>
     <div class="form">
-        <input type="range" id="x" min="-100" max="100">
-        <input type="range" id="y" min="-100" max="100">
-        <input type="range" id="z" min="-100" max="100">
+ 
     </div>
     <div id="es"></div>
-    <div id="root">
-    </div>
+    <div id="root"><h1 id="hed"></h1></div>
+    
     <script>
-        window.addEventListener("load", function () {
+ window.addEventListener("load", function () {
         
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(
             45,    // kąt patrzenia kamery (FOV - field of view)
-            4/3,    // proporcje widoku, powinny odpowiadać proporcjom ekranu przeglądarki użytkownika
+            16/9,    // proporcje widoku, powinny odpowiadać proporcjom ekranu przeglądarki użytkownika
             0.1,    // minimalna renderowana odległość
             10000    // maksymalna renderowana odległość od kamery
             );
-        const axes = new THREE.AxesHelper(1000)
-        scene.add(axes)
+        // const axes = new THREE.AxesHelper(1000)
+        // scene.add(axes)
         const renderer = new THREE.WebGLRenderer();
         renderer.setClearColor(0xffffff);
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById("root").appendChild( renderer.domElement );
-
-        camera.position.x = -200;
-        camera.position.y = 200;
-        camera.position.z = 200;
-
-        // lub
-
         camera.position.set(100,100,100)
-
+       
         // nakierowanie kamery na punkt (0,0,0) w przestrzeni (zakładamy, że istnieje już scena)
             camera.lookAt(scene.position);
-            
+        
         // kluczowy element - animacja
-        let x1 = document.getElementById('x')
-        let y1 = document.getElementById('y')
-        let z1 = document.getElementById('z')
-        let add = document.getElementById('add')
-        let del = document.getElementById('del')
-        let tresc = document.getElementById('es')
-               
-                const geometry = new THREE.BoxGeometry(50, 50, 50);
+            const geometry = new THREE.BoxGeometry(20, 20, 20);
                 
-                const material = new THREE.MeshBasicMaterial({
+                const material = new THREE.MeshNormalMaterial({
                     color: 0x8888ff,
                     side: THREE.DoubleSide,
                     wireframe: false,
-                    transparent: true,
+                    transparent: false,
                     opacity: 0.5
                });
-            const cube = new THREE.Mesh(geometry, material);
-            scene.add(cube);
-        camera.fov = 120;
+        document.addEventListener("keydown", (e) => {
+            document.getElementById('hed').innerHTML = e.keyCode;
+        });
+        camera.fov = 100;
         camera.updateProjectionMatrix();
         function render() {
-            let x = parseFloat(x1.value)
-            let y = parseFloat(y1.value)
-            let z = parseFloat(z1.value)
-            tresc.innerHTML = JSON.stringify({
-                x: x,
-                y: y,
-                z: z
-            })
-            
+        
             requestAnimationFrame(render);
             console.log("render leci")
-            cube.position.set(x,y,z)
-            //ciągłe renderowanie / wyświetlanie widoku sceny naszą kamerą
-                
             renderer.render(scene, camera);
         }
 
